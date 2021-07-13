@@ -1,0 +1,1817 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location were resources will be deployed"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for administrator of virtual machines and SSH"
+            }
+        },
+        "authenticationType": {
+            "type": "string",
+            "allowedValues": [
+                "password",
+                "sshPublicKey"
+            ],
+            "metadata": {
+                "description": "Authentication type for the virtual machines"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Admin password for the virtual machines and SSH. Keep empty if providing SSH Public Key authentication type."
+            }
+        },
+        "sshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key that will be included on all nodes in the cluster. The OpenSSH public key can be generated with tools like ssh-keygen on Linux or OS X."
+            }
+        },
+        "vmNamePrefixDatabase": {
+            "type": "string",
+            "metadata": {
+                "description": "Prefix that will be used for the Database VMs consisting of 2-10 lowercase letter and numbers"
+            }
+        },
+        "dbsPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Database password used for DBS system"
+            }
+        },
+        "japaneseSupport": {
+            "type": "string",
+            "metadata": {
+                "description": "Japanese Support"
+            }
+        },
+        "databaseVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "Database Version Selected"
+            }
+        },
+        "packageSelector": {
+            "type": "string",
+            "metadata": {
+                "description": "Database Tier Selected"
+            }
+        },
+        "vmCountDatabase": {
+            "type": "int",
+            "metadata": {
+                "description": "Number of the VMs in DBS System"
+            }
+        },
+        "clusterVmSizeDataBase": {
+            "type": "string",
+            "metadata": {
+                "description": "Size of the Database VMs"
+            }
+        },
+        "clusterVMStorageSize": {
+            "type": "string",
+            "defaultValue": "0TB",
+            "metadata": {
+                "description": "SKU size of cluster virtual machine"
+            }
+        },
+        "numberOfNics": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Number of NICs"
+            }
+        },
+        "byol": {
+            "type": "string",
+            "defaultValue": "Yes",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Byol Yes or No"
+            }
+        },
+        "scaleSize": {
+            "type": "string",
+            "defaultValue": "1",
+            "allowedValues": [
+                "1",
+                "0",
+                "2",
+                "4"
+            ],
+            "metadata": {
+                "description": "scaling option"
+            }
+        },
+        "rowLevelSecurity": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Parameter that specifies RowLevelSecurity is Selected or not"
+            }
+        },
+        "secureZones": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Parameter that specifies SecureZones is Selected or not"
+            }
+        },
+        "temporal": {
+            "type": "string",
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Parameter that specifies Temporal is Selected or not"
+            }
+        },
+        "tim": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Parameter that specifies TeradataIntelligentMemory is Selected or not"
+            }
+        },
+        "timCachePercent": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "TIM cache percent (1-80)"
+            }
+        },
+        "mainframeConnectivity": {
+            "type": "int",
+            "defaultValue": 0,
+            "allowedValues": [
+                0,
+                1,
+                2
+            ],
+            "metadata": {
+                "description": "number of parsing engines per node you want for mainframe connectivity"
+            }
+        },
+        "publicIPAddressSingleOrMultiple": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Parameter that specifies if an single or multiple public IP's should be used for deployment"
+            }
+        },
+        "vpPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for administrator viewpoint"
+            }
+        },
+        "vpSshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key for viewpoint"
+            }
+        },
+        "vpAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "metadata": {
+                "description": "Authentication type for the viewpoint virtual machines"
+            }
+        },
+        "vpSystemNamePrefix": {
+            "type": "string",
+            "defaultValue": "viewpoint",
+            "metadata": {
+                "description": "Viewpoint system prefix"
+            }
+        },
+        "vpVmSize": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Viewpoint VM size"
+            }
+        },
+        "vpYesOrNo": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Whether to deploy viewpoint yes or no"
+            }
+        },
+        "vpportalpassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "portal admin user password"
+            }
+        },
+        "vpSystemNickName": {
+            "type": "string",
+            "defaultValue": "database",
+            "metadata": {
+                "description": "Name for monitored system in Viewpoint"
+            }
+        },
+        "vpSku": {
+            "type": "string",
+            "defaultValue": "multiple",
+            "metadata": {
+                "description": "vp image sku"
+            }
+        },
+        "smPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for administrator SM"
+            }
+        },
+        "smSshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key for SM"
+            }
+        },
+        "smAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "metadata": {
+                "description": "Authentication type for the SM virtual machines"
+            }
+        },
+        "smSiteID": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Site ID"
+            }
+        },
+        "smAdminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Server Management Admin password"
+            }
+        },
+        "smSystemNamePrefix": {
+            "type": "string",
+            "defaultValue": "sma",
+            "metadata": {
+                "description": "ServerManagement system prefix"
+            }
+        },
+        "smRESTPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Server Management REST password"
+            }
+        },
+        "smYesOrNo": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Whether to deploy server management yes or no"
+            }
+        },
+        "smSystemCount": {
+            "type": "int",
+            "defaultValue": 2,
+            "metadata": {
+                "description": "Server Management VM Count"
+            }
+        },
+        "smClusterVmSize": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SM VM size"
+            }
+        },
+        "tdRestPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for administrator TDREST"
+            }
+        },
+        "tdRestSshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key for TDREST"
+            }
+        },
+        "tdRestAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "metadata": {
+                "description": "Authentication type for the TDREST virtual machines"
+            }
+        },
+        "tdRestSystemNamePrefix": {
+            "type": "string",
+            "defaultValue": "tdrest",
+            "metadata": {
+                "description": "TDREST system prefix"
+            }
+        },
+        "tdRestVmSize": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "TDREST VM size"
+            }
+        },
+        "tdRestYesOrNo": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Whether to deploy TDREST yes or no"
+            }
+        },
+        "dsuPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for administrator DSU"
+            }
+        },
+        "dsuSshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key for DSU"
+            }
+        },
+        "dsuAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "metadata": {
+                "description": "Authentication type for the DSU virtual machines"
+            }
+        },
+        "dsuDBCPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "DSU dbc password"
+            }
+        },
+        "dsuadminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "DSU int dbc password"
+            }
+        },
+        "dsuSystemPrefix": {
+            "type": "string",
+            "defaultValue": "dsc",
+            "metadata": {
+                "description": "dsu system prefix"
+            }
+        },
+        "dsuClusterVmSize": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "DSU VM size"
+            }
+        },
+        "dsuYesOrNo": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Whether to deploy dsu yes or no"
+            }
+        },
+        "emPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for administrator ecosystem manager"
+            }
+        },
+        "emSshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key for ecosystem manager"
+            }
+        },
+        "emAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "metadata": {
+                "description": "Authentication type for the ecosystem manager virtual machines"
+            }
+        },
+        "emSystemNamePrefix": {
+            "type": "string",
+            "defaultValue": "ecosysmngr",
+            "metadata": {
+                "description": "ecosystem manager system prefix"
+            }
+        },
+        "emVmSize": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "ecosystem manager VM size"
+            }
+        },
+        "emYesOrNo": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Whether to deploy ecosystem manager yes or no"
+            }
+        },
+        "dmPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for administrator datamover"
+            }
+        },
+        "dmSshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key for datamover"
+            }
+        },
+        "dmAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "metadata": {
+                "description": "Authentication type for the datamover virtual machines"
+            }
+        },
+        "dmDBCPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Data mover dbc password"
+            }
+        },
+        "dmIntPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Data mover dbc password"
+            }
+        },
+        "dmSystemPrefix": {
+            "type": "string",
+            "defaultValue": "datamover",
+            "metadata": {
+                "description": "Datamover system prefix"
+            }
+        },
+        "dmAgentNodeCount": {
+            "type": "int",
+            "defaultValue": 0,
+            "metadata": {
+                "description": "Number of Additional Data Mover Agents(Min:0 Max: 3)"
+            }
+        },
+        "dmClusterVmSize": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Data mover cluster VM size"
+            }
+        },
+        "dmYesOrNo": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Weather to deploy datamover yes or no"
+            }
+        },
+        "queryGridSystemNamePrefix": {
+            "type": "string",
+            "defaultValue": "querygrid",
+            "metadata": {
+                "description": "Prefix that will be used for the QueryGrid VMs consisting of 2-10 lowercase letter and numbers"
+            }
+        },
+        "clusterVmSizeQueryGrid": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Size of the QueryGrid VMs"
+            }
+        },
+        "queryGridSshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key for ecosystem manager"
+            }
+        },
+        "queryGridAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "metadata": {
+                "description": "Authentication type for the ecosystem manager virtual machines"
+            }
+        },
+        "queryGridYesOrNo": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Whether to deploy queryGrid yes or no"
+            }
+        },
+        "queryGridPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for administrator queryGrid"
+            }
+        },
+        "unityPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for administrator unity"
+            }
+        },
+        "unitySshPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH public key for unity"
+            }
+        },
+        "unityAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "metadata": {
+                "description": "Authentication type for the unity virtual machines"
+            }
+        },
+        "unitySystemNamePrefix": {
+            "type": "string",
+            "defaultValue": "ecosysmngr",
+            "metadata": {
+                "description": "unity system prefix"
+            }
+        },
+        "unityVmSize": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "unity VM size"
+            }
+        },
+        "unityYesOrNo": {
+            "type": "string",
+            "defaultValue": "No",
+            "metadata": {
+                "description": "Whether to deploy unity yes or no"
+            }
+        },
+        "tdcTimeZone": {
+            "type": "string",
+            "metadata": {
+                "description": "Time zone for TDC Network"
+            }
+        },
+        "ntpServerlist": {
+            "type": "string",
+            "metadata": {
+                "description": "NTPservers for all applications"
+            }
+        },
+        "vnetResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Network Resource Group for cases when cluster nodes are deployed into an existing VNet"
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Network name"
+            }
+        },
+        "vnetNewOrExisting": {
+            "type": "string",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Parameter that specifies if an new or an existing virtual network should be used for deploying cluster nodes"
+            }
+        },
+        "vnetAddressSpace": {
+            "type": "string",
+            "defaultValue": "10.1.0.0/16",
+            "metadata": {
+                "description": "Virtual Network Address Prefix (i.e. CIDR)"
+            }
+        },
+        "vmSubnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Subnet"
+            }
+        },
+        "vmSubnetAddressSpace": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Subnet Address Space"
+            }
+        },
+        "vmSubnetStartAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "VMSubnet Start Address"
+            }
+        },
+        "roleType": {
+            "type": "string",
+            "defaultValue": "Contributor",
+            "allowedValues": [
+                "Contributor"
+            ],
+            "metadata": {
+                "description": "Role to be assigned to the Managed Identity which would be attached to database VMs"
+            }
+        }
+    },
+    "variables": {
+        "threeFaultDomainRegions": [
+            "eastus",
+            "eastus2",
+            "westus",
+            "centralus",
+            "northcentralus",
+            "southcentralus",
+            "northeurope",
+            "westeurope",
+            "canadacentral"
+        ],
+        "faultDomain": "[if(contains(variables('threeFaultDomainRegions'), parameters('location')), '3', '2')]",
+        "scaleOut1": 1,
+        "scaleOut4": 1,
+        "scaleOut2": 2,
+        "scaleOut0": 4,
+        "scaleSize": "[variables(concat('scaleOut',parameters('scaleSize')))]",
+        "dataDiskCount": "[parameters('clusterVMStorageSize')]",
+        "nicCount": "[if(equals(parameters('scaleSize'),'0'),1,parameters('scaleSize'))]",
+        "nicVmCountDatabase": "[add(mul(int(variables('nicCount')),parameters('vmCountDatabase')),parameters('vmCountDatabase'))]",
+        "scaleOutNo1": 0,
+        "scaleOutNo4": 1,
+        "scaleOutNo2": 2,
+        "scaleOutNo0": 4,
+        "scaleOutNo": "[variables(concat('scaleOutNo',parameters('scaleSize')))]",
+        "nicScaleCount1": 1,
+        "nicScaleCount4": 4,
+        "nicScaleCount2": 2,
+        "nicScaleCount0": 1,
+        "noOfNicsToCreate": "[variables(concat('nicScaleCount',parameters('scaleSize')))]",
+        "singleQuote": "'",
+        "singleQuoteSlash": "\\'\\'",
+        "dbsPassword": "[concat(variables('singleQuote'),parameters('dbsPassword'),variables('singleQuote'))]",
+        "urlSelector": "[if(equals(variables('dataDiskCount'), '0TB'), 0,1)]",
+        "defaultTemplateUrl_0": "[uri(deployment().properties.templateLink.uri,'wo_datadisk.json')]",
+        "defaultTemplateUrl_1": "[uri(deployment().properties.templateLink.uri,'w_datadisk.json')]",
+        "templateUrlDataBase": "[variables(concat('defaultTemplateUrl_',variables('urlSelector')))]",
+        "defaultPublicIP_No_1": "[uri(deployment().properties.templateLink.uri,'publicIP-no.json')]",
+        "defaultPublicIP_No_0": "[uri(deployment().properties.templateLink.uri,'publicIP-no.json')]",
+        "defaultPublicIP_Single_1": "[uri(deployment().properties.templateLink.uri,'publicIP-single.json')]",
+        "defaultPublicIP_Multiple_1": "[uri(deployment().properties.templateLink.uri,'publicIP-multiple.json')]",
+        "defaultPublicIP_Single_0": "[uri(deployment().properties.templateLink.uri,'publicIP-multiple.json')]",
+        "defaultPublicIP_Multiple_0": "[uri(deployment().properties.templateLink.uri,'publicIP-multiple.json')]",
+        "templateUrlPublicIP": "[variables(concat('defaultPublicIP_',parameters('publicIPAddressSingleOrMultiple'),'_',mod(1,parameters('vmCountDatabase'))))]",
+        "templateUrlVnet": "[uri(deployment().properties.templateLink.uri,'vnet.json')]",
+        "templateUrlViewpoint": "[uri(deployment().properties.templateLink.uri,'viewpoint.json')]",
+        "templateUrlEcosystemmanager": "[uri(deployment().properties.templateLink.uri,'Ecosystemmanager.json')]",
+        "templateUrltdRest": "[uri(deployment().properties.templateLink.uri,'tdRest.json')]",
+        "templateUrlDatamover": "[uri(deployment().properties.templateLink.uri,'datamoverMA.json')]",
+        "templateUrlQueryGrid": "[uri(deployment().properties.templateLink.uri,'querygrid.json')]",
+        "templateUrlDsu": "[uri(deployment().properties.templateLink.uri,'dsu.json')]",
+        "templateUrlServerManagement": "[uri(deployment().properties.templateLink.uri,'serverManagement.json')]",
+        "templateUrlUnity": "[uri(deployment().properties.templateLink.uri,'unity.json')]",
+        "scriptUrlInit": "[uri(deployment().properties.templateLink.uri,'mpp_configuration.sh')]",
+        "scriptHostUrlvp": "[uri(deployment().properties.templateLink.uri,'generate_ansible_req.py')]",
+        "vm": "[concat(parameters('vmNamePrefixDatabase'),'-','vm')]",
+        "defaultOSStorageType": {
+            "Standard_D15_v2": "Standard_LRS",
+            "Standard_DS15_v2": "Premium_LRS",
+            "Standard_DS14_v2": "Premium_LRS",
+            "Standard_L8s": "Premium_LRS",
+            "Standard_L32s": "Premium_LRS",
+            "Standard_E16s_v3": "Premium_LRS",
+            "Standard_E32s_v3": "Premium_LRS",
+            "Standard_E32-16s_v3": "Premium_LRS",
+            "Standard_E32-8s_v3": "Premium_LRS",
+            "Standard_E64s_v3": "Premium_LRS",
+            "Standard_E64-32s_v3": "Premium_LRS",
+            "Standard_E64-16s_v3": "Premium_LRS",
+            "Standard_D16s_v3": "Premium_LRS",
+            "Standard_D32s_v3": "Premium_LRS",
+            "Standard_D64s_v3": "Premium_LRS"
+        },
+        "imageStorageAccountType": "[variables('defaultOSStorageType')[parameters('clusterVmSizeDataBase')]]",
+        "datadiskSize": "[parameters('clusterVMStorageSize')]",
+        "defaultskuType": {
+            "Standard_D15_v2": "Standard_D15_V2-LOCAL-SSD-1TB-8A",
+            "Standard_DS15_v2": "Generic",
+            "Standard_DS14_v2": "Generic",
+            "Standard_L8s": "Standard_L8S-LOCAL-SSD-1490GB",
+            "Standard_L32s": "Standard_L32S-LOCAL-SSD-6TB",
+            "Standard_E16s_v3": "Generic",
+            "Standard_E32s_v3": "Generic",
+            "Standard_E32-16s_v3": "Generic",
+            "Standard_E32-8s_v3": "Generic",
+            "Standard_E64s_v3": "Generic",
+            "Standard_E64-32s_v3": "Generic",
+            "Standard_E64-16s_v3": "Generic",
+            "Standard_D16s_v3": "Generic",
+            "Standard_D32s_v3": "Generic",
+            "Standard_D64s_v3": "Generic"
+        },
+        "skuTypeValue": "[variables('defaultskuType')[parameters('clusterVmSizeDataBase')]]",
+        "diagnosticsStorageAccount": "[concat('diag',uniqueString(resourceGroup().id,'d'))]",
+        "publicIPAddressName": "[concat(parameters('vmNamePrefixDatabase'),'-','publicip')]",
+        "publicIPAddressDomainNameLabel": "[concat(parameters('vmNamePrefixDatabase'),'-',uniqueString(resourceGroup().id))]",
+        "defaultPublicIPType_No": "Static",
+        "defaultPublicIPType_single": "Static",
+        "defaultPublicIPType_multiple": "Static",
+        "publicIPAddressType": "[variables(concat('defaultPublicIPType_',parameters('publicIPAddressSingleOrMultiple')))]",
+        "vnetID": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+        "subnet1ID": "[concat(variables('vnetID'),'/subnets/',parameters('vmSubnetName'))]",
+        "nsgName": "[if(greater(parameters('mainframeConnectivity'),0),concat(parameters('vmNamePrefixDatabase'),'-mainframe','-nsg'),concat(parameters('vmNamePrefixDatabase'),'-nsg'))]",
+        "kanjiSupport": "[if(equals(toLower(parameters('japaneseSupport')),'yes'),'yes','no')]",
+        "sharedStorageAccountType": "Premium_LRS",
+        "securityFeature": "[concat(parameters('rowLevelSecurity'),',',parameters('secureZones'),',',parameters('tim'))]",
+        "coreSku": {
+            "Standard_E16s_v3": "-248",
+            "Standard_E16-8s_v3": "-168",
+            "Standard_E16-4s_v3": "-128",
+            "Standard_E32s_v3": "-496",
+            "Standard_E32-16s_v3": "-336",
+            "Standard_E32-8s_v3": "-256",
+            "Standard_E64s_v3": "-914",
+            "Standard_E64-32s_v3": "-594",
+            "Standard_E64-16s_v3": "-434",
+            "Standard_D16s_v3": "-248",
+            "Standard_D32s_v3": "-496",
+            "Standard_D64s_v3": "-914",
+            "Standard_L32s": "-ls",
+            "Standard_L8s": "-ls",
+            "Standard_D15_v2": "-ls"
+        },
+        "offer_1620": {
+            "DB": {
+                "Yes": "teradata-database-1620-byol",
+                "No": "teradata-database-1620"
+            },
+            "DM": "teradata-data-mover",
+            "DMAgent": "teradata-data-mover",
+            "SM": "teradata-server-management",
+            "VP": "teradata-viewpoint",
+            "EM": "teradata-ecosystem-manager",
+            "DSU": "teradata-data-stream-controller",
+            "tdRest": "teradata-rest-services",
+            "QG": "teradata-querygrid-manager",
+            "Unity": "teradata-unity"
+        },
+        "dbSkuByolYes_1620": {
+            "Base": "teradata-database-base-1620-byol",
+            "Enterprise": "teradata-database-enterprise-1620-byol",
+            "Advanced": "teradata-database-advanced-1620-byol"
+        },
+        "dbSkuByolNo_1620": {
+            "Developer": "teradata-database-developer-1620",
+            "Base": "teradata-database-base-1620",
+            "Enterprise": "teradata-database-enterprise-1620",
+            "Advanced": "teradata-database-advanced-1620"
+        },
+        "sku_1620": {
+            "DM": "teradata-data-mover-hourly",
+            "DMAgent": "teradata-data-mover-agent-hourly",
+            "SM": "teradata-server-management",
+            "EM": "teradata-ecosystem-manager",
+            "DSU": "teradata-data-stream-controller",
+            "tdRest": "teradata-rest-services",
+            "QG": "teradata-querygrid-manager",
+            "Unity": "teradata-unity"
+        },
+        "dbSkuVersion": "[variables(concat('dbSkuByol',parameters('byol'),'_',parameters('databaseVersion')))]",
+        "imagePublisher": "teradata",
+        "imageOffer": "[variables(concat('offer_',parameters('databaseVersion'))).DB[parameters('byol')]]",
+        "imageSku": "[if(equals(parameters('packageSelector'),'Developer'),'teradata-database-developer-1620',concat(variables('dbSkuVersion')[parameters('packageSelector')],variables('coreSku')[parameters('clusterVmSizeDataBase')]))]",
+        "imagePublisherDM": "teradata",
+        "imageOfferDM": "[variables(concat('offer_',parameters('databaseVersion'))).DM]",
+        "imageSkuDM": "[variables(concat('sku_',parameters('databaseVersion'))).DM]",
+        "imageOfferAgent": "[variables(concat('offer_',parameters('databaseVersion'))).DMagent]",
+        "imageSkuAgent": "[variables(concat('sku_',parameters('databaseVersion'))).DMagent]",
+        "imagePublisherSM": "teradata",
+        "imageOfferSM": "[variables(concat('offer_',parameters('databaseVersion'))).SM]",
+        "imageSkuSM": "[variables(concat('sku_',parameters('databaseVersion'))).SM]",
+        "imagePublisherVP": "teradata",
+        "imageOfferVP": "[variables(concat('offer_',parameters('databaseVersion'))).VP]",
+        "imageSkuVP": "[parameters('vpSku')]",
+        "imagePublisherEM": "teradata",
+        "imageOfferEM": "[variables(concat('offer_',parameters('databaseVersion'))).EM]",
+        "imageSkuEM": "[variables(concat('sku_',parameters('databaseVersion'))).EM]",
+        "imagePublisherDSU": "teradata",
+        "imageOfferDSU": "[variables(concat('offer_',parameters('databaseVersion'))).DSU]",
+        "imageSkuDSU": "[variables(concat('sku_',parameters('databaseVersion'))).DSU]",
+        "imagePublishertdRest": "teradata",
+        "imageOffertdRest": "[variables(concat('offer_',parameters('databaseVersion'))).tdRest]",
+        "imageSkutdRest": "[variables(concat('sku_',parameters('databaseVersion'))).tdRest]",
+        "imagePublisherQG": "teradata",
+        "imageOfferQG": "[variables(concat('offer_',parameters('databaseVersion'))).QG]",
+        "imageSKUQG": "[variables(concat('sku_',parameters('databaseVersion'))).QG]",
+        "imagePublisherUnity": "teradata",
+        "imageOfferUnity": "[variables(concat('offer_',parameters('databaseVersion'))).Unity]",
+        "imageSKUUnity": "[variables(concat('sku_',parameters('databaseVersion'))).Unity]",
+        "vpNodeCount_Yes": 1,
+        "vpNodeCount_No": 0,
+        "vpNodeCount": "[variables(concat('vpNodeCount_',parameters('vpYesOrNo')))]",
+        "smSystemCount_Yes": "[parameters('smSystemCount')]",
+        "smSystemCount_No": 0,
+        "smSystemCount": "[variables(concat('smSystemCount_',parameters('smYesOrNo')))]",
+        "emNodeCount_Yes": 1,
+        "emNodeCount_No": 0,
+        "emNodeCount": "[variables(concat('emNodeCount_',parameters('emYesOrNo')))]",
+        "tdRestNodeCount_Yes": 1,
+        "tdRestNodeCount_No": 0,
+        "tdRestNodeCount": "[variables(concat('tdRestNodeCount_',parameters('tdRestYesOrNo')))]",
+        "dmMasterCount": 1,
+        "dmSystemCount_Yes": "[add(1,parameters('dmAgentNodeCount'))]",
+        "dmSystemCount_No": 0,
+        "dmSystemCount": "[variables(concat('dmSystemCount_',parameters('dmYesOrNo')))]",
+        "dsuNodeCount_Yes": 1,
+        "dsuNodeCount_No": 0,
+        "dsuNodeCount": "[variables(concat('dsuNodeCount_',parameters('dsuYesOrNo')))]",
+        "queryGridNodeCount_Yes": 1,
+        "queryGridNodeCount_No": 0,
+        "queryGridNodeCount": "[variables(concat('queryGridNodeCount_',parameters('queryGridYesOrNo')))]",
+        "unityNodeCount": "[if(equals(parameters('unityYesOrNo'),'Yes'), 1, 0)]",
+        "smSystemPrefix": "[parameters('smSystemNamePrefix')]",
+        "s1": "[split(parameters('vmSubnetStartAddress'),'.')]",
+        "viewpointAddressCount": "[variables('nicVmCountDatabase')]",
+        "serverManagementAddressCount": "[add(variables('nicVmCountDatabase'),variables('vpNodeCount'))]",
+        "dsuAddressCount": "[add(variables('nicVmCountDatabase'),add(variables('vpNodeCount'),variables('smSystemCount')))]",
+        "emAddressCount": "[add(variables('nicVmCountDatabase'),add(variables('vpNodeCount'),add(variables('smSystemCount'),variables('dsuNodeCount'))))]",
+        "datamoverAddressCount": "[add(variables('nicVmCountDatabase'),add(variables('vpNodeCount'),add(variables('smSystemCount'),add(variables('dsuNodeCount'),variables('emNodeCount')))))]",
+        "tdRestAddressCount": "[add(variables('nicVmCountDatabase'),add(variables('vpNodeCount'),add(variables('smSystemCount'),add(variables('dsuNodeCount'),add(variables('emNodeCount'),variables('dmSystemCount'))))))]",
+        "vmSubnetStartAddress1": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),parameters('vmCountDatabase')),256)), '.', mod(add(int(variables('s1')[3]),parameters('vmCountDatabase')),256))]",
+        "queryGridAddressCount": "[add(variables('nicVmCountDatabase'),add(variables('vpNodeCount'),add(variables('smSystemCount'),add(variables('dsuNodeCount'),add(variables('emNodeCount'),add(variables('dmSystemCount'),variables('tdRestNodeCount')))))))]",
+        "unityAddressCount": "[add(variables('nicVmCountDatabase'),add(variables('vpNodeCount'),add(variables('smSystemCount'),add(variables('dsuNodeCount'),add(variables('emNodeCount'),add(variables('dmSystemCount'),add(variables('tdRestNodeCount'),variables('queryGridNodeCount'))))))))]",
+        "dmSubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('datamoverAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),variables('datamoverAddressCount')),256))]",
+        "dmagentSubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('datamoverAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),add(1,variables('datamoverAddressCount'))),256))]",
+        "smSubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('serverManagementAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),variables('serverManagementAddressCount')),256))]",
+        "vpSubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('viewpointAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),variables('viewpointAddressCount')),256))]",
+        "dsuSubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('dsuAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),variables('dsuAddressCount')),256))]",
+        "emSubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('emAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),variables('emAddressCount')),256))]",
+        "tdRestSubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('tdRestAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),variables('tdRestAddressCount')),256))]",
+        "queryGridSubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('queryGridAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),variables('queryGridAddressCount')),256))]",
+        "unitySubnetStartAddress": "[concat(variables('s1')[0], '.', variables('s1')[1], '.', add(int(variables('s1')[2]), div(add(int(variables('s1')[3]),variables('unityAddressCount')),256)), '.', mod(add(int(variables('s1')[3]),variables('unityAddressCount')),256))]",
+        "vpHostFileParam_Yes": "[concat(' --vp ',parameters('vpSystemNamePrefix'),',',variables('vpNodeCount'),',',variables('vpSubnetStartAddress'))]",
+        "vpHostFileParam_No": "",
+        "dmHostFileParamM": "[concat(' --dm_master ',parameters('dmSystemPrefix'),'DMMasterAgent',',',variables('dmMasterCount'),',',variables('dmSubnetStartAddress'))]",
+        "dmHostFileParamA": "[concat(' --dm_agent ',parameters('dmSystemPrefix'),'DMAgent',',',parameters('dmAgentNodeCount'),',',variables('dmagentSubnetStartAddress'))]",
+        "dmHostFileParam_0": "[variables('dmHostFileParamM')]",
+        "dmHostFileParam_1": "[concat(variables('dmHostFileParamM'),variables('dmHostFileParamA'))]",
+        "dmHostFileParam_2": "[concat(variables('dmHostFileParamM'),variables('dmHostFileParamA'))]",
+        "dmHostFileParam_3": "[concat(variables('dmHostFileParamM'),variables('dmHostFileParamA'))]",
+        "dmHostFileParam_No": "",
+        "dmHostFileParam_Yes": "[variables(concat('dmHostFileParam_',parameters('dmAgentNodeCount')))]",
+        "smHostFileParam_Yes": "[concat(' --cmic ',variables('smSystemPrefix'),',',variables('smSystemCount'),',',variables('smSubnetStartAddress'))]",
+        "smHostFileParam_No": "",
+        "emHostFileParam_Yes": "[concat(' --em ',parameters('emSystemNamePrefix'),',',variables('emNodeCount'),',',variables('emSubnetStartAddress'))]",
+        "emHostFileParam_No": "",
+        "dsuHostFileParam_Yes": "[concat(' --dsu ',parameters('dsuSystemPrefix'),',',variables('dsuNodeCount'),',',variables('dsuSubnetStartAddress'))]",
+        "dsuHostFileParam_No": "",
+        "tdRestHostFileParam_Yes": "[concat(' --rest ',parameters('tdRestSystemNamePrefix'),',',variables('tdRestNodeCount'),',',variables('tdRestSubnetStartAddress'))]",
+        "tdRestHostFileParam_No": "",
+        "qgridHostFileParam_Yes": "[concat(' --qgm ',parameters('queryGridSystemNamePrefix'),',',variables('queryGridNodeCount'),',',variables('queryGridSubnetStartAddress'))]",
+        "qgridHostFileParam_No": "",
+        "unityHostFileParam_Yes": "[concat(' --unity ',parameters('unitySystemNamePrefix'),',',variables('unityNodeCount'),',',variables('unitySubnetStartAddress'))]",
+        "unityHostFileParam_No": "",
+        "generateHostFileParam": "[concat('--tpa ',parameters('vmNamePrefixDatabase'),',',parameters('vmCountDatabase'),',',variables('vmSubnetStartAddress1'),variables(concat('vpHostFileParam_',parameters('vpYesOrNo'))),variables(concat('emHostFileParam_',parameters('emYesOrNo'))),variables(concat('dsuHostFileParam_',parameters('dsuYesOrNo'))),variables(concat('smHostFileParam_',parameters('smYesOrNo'))),variables(concat('dmHostFileParam_',parameters('dmYesOrNo'))),variables(concat('tdRestHostFileParam_',parameters('tdRestYesOrNo'))),variables(concat('qgridHostFileParam_',parameters('querygridYesOrNo'))),variables(concat('unityHostFileParam_',parameters('unityYesOrNo'))))]",
+        "smAnsible_Yes": "[concat(' sm_admin_pass=',parameters('smAdminPassword'),' sm_rest_pass=',parameters('smRESTPassword'),' siteid=',parameters('smSiteID'))]",
+        "smAnsible_No": "",
+        "dmAnsible_Yes": "[concat('  dm_dbc_password=',variables('singleQuote'),parameters('dmDBCPassword'),variables('singleQuote'),' dm_datamover_password=',parameters('dmIntPassword'))]",
+        "dmAnsible_No": "",
+        "dsuAnsible_Yes": "[concat(' dsu_dbc_password=',variables('singleQuoteSlash'),parameters('dsuDBCPassword'),variables('singleQuoteSlash'),' dsu_admin_password=',parameters('dsuadminPassword'))]",
+        "dsuAnsible_No": "",
+        "unityPw": "[concat(parameters('unitySystemNamePrefix'),'vm0')]",
+        "databasePw": "[concat(parameters('vmNamePrefixDatabase'),'vm0')]",
+        "unityAnsible_Yes": "[concat(' unity_password=',variables('unityPw'),' dbnode_password=',variables('databasePw'))]",
+        "unityAnsible_No": "",
+        "ansibleparam": "[concat('cloud_env=aws system_name=',parameters('vmNamePrefixDatabase'),' system_nickname=',parameters('vpSystemNickName'),' dbc_pass=',variables('dbsPassword'),' ntp_server_list=',parameters('ntpServerlist'),' vp_portal_password=',parameters('vpportalpassword'),variables(concat('smAnsible_',parameters('smYesOrNo'))),variables(concat('dmAnsible_',parameters('dmYesOrNo'))),variables(concat('dsuAnsible_',parameters('dsuYesOrNo'))),variables(concat('unityAnsible_',parameters('unityYesOrNo'))))]",
+        "vnet": "[concat('vnet',uniqueString(resourceGroup().id))]",
+        "publicIP": "[concat('publicIP',uniqueString(resourceGroup().id))]",
+        "database": "[concat('database',uniqueString(resourceGroup().id))]",
+        "viewpoint": "[concat('viewpoint',uniqueString(resourceGroup().id))]",
+        "datamover": "[concat('datamover',uniqueString(resourceGroup().id))]",
+        "queryGrid": "[concat('queryGrid',uniqueString(resourceGroup().id))]",
+        "dsu": "[concat('dsc',uniqueString(resourceGroup().id))]",
+        "serverManagement": "[concat('serverManagement',uniqueString(resourceGroup().id))]",
+        "ecosystemmanager": "[concat('ecosystemmanager',uniqueString(resourceGroup().id))]",
+        "tdRest": "[concat('tdRest',uniqueString(resourceGroup().id))]",
+        "unity": "[concat('unity',uniqueString(resourceGroup().id))]",
+        "diskCaching": "None"
+    },
+    "resources": [
+        {
+            "name": "pid-c8fc0721-f2c2-42f1-aa50-5aad1b9649bf-partnercenter",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": []
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-04-01",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('diagnosticsStorageAccount')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "component": "database"
+            },
+            "kind": "Storage",
+            "sku": {
+                "name": "Standard_LRS"
+            }
+        },
+        {
+            "condition": "[equals(parameters('mainframeConnectivity'),0)]",
+            "apiVersion": "2019-06-01",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[concat(parameters('vmNamePrefixDatabase'),'-nsg')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "component": "database"
+            },
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "Allow_SSH",
+                        "properties": {
+                            "description": "Allow APP Subnet",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "condition": "[greater(parameters('mainframeConnectivity'),0)]",
+            "apiVersion": "2019-06-01",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[concat(parameters('vmNamePrefixDatabase'),'-mainframe','-nsg')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "component": "database"
+            },
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "Allow_SSH",
+                        "properties": {
+                            "description": "Allow APP Subnet",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "Allow_Mainframe_64432",
+                        "properties": {
+                            "description": "Allow APP Subnet",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "64432",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 101,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "condition": "[equals(parameters('vnetNewOrExisting'),'new')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('vnet')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlVnet')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "vnetName": {
+                        "value": "[parameters('vnetName')]"
+                    },
+                    "vnetResourceGroup": {
+                        "value": "[parameters('vnetResourceGroup')]"
+                    },
+                    "vnetAddressSpace": {
+                        "value": "[parameters('vnetAddressSpace')]"
+                    },
+                    "vmSubnetName": {
+                        "value": "[parameters('vmSubnetName')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('publicIP')]",
+            "dependsOn": [
+                "[variables('vnet')]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlPublicIP')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "vmCount": {
+                        "value": "[parameters('vmCountDatabase')]"
+                    },
+                    "subnet1ID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "vmNamePrefixDatabase": {
+                        "value": "[parameters('vmNamePrefixDatabase')]"
+                    },
+                    "vmSubnetStartAddress": {
+                        "value": "[parameters('vmSubnetStartAddress')]"
+                    },
+                    "nsgName": {
+                        "value": "[variables('nsgName')]"
+                    },
+                    "scaleSize": {
+                        "value": "[variables('noOfNicsToCreate')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('database')]",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccount'))]",
+                "[variables('publicIP')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlDataBase')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "sshPublicKey": {
+                        "value": "[parameters('sshPublicKey')]"
+                    },
+                    "authenticationType": {
+                        "value": "[parameters('authenticationType')]"
+                    },
+                    "dbsPassword": {
+                        "value": "[variables('dbsPassword')]"
+                    },
+                    "clusterName": {
+                        "value": "[parameters('vmNamePrefixDatabase')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('clusterVmSizeDataBase')]"
+                    },
+                    "vmCount": {
+                        "value": "[parameters('vmCountDatabase')]"
+                    },
+                    "dataDiskCount": {
+                        "value": "[variables('dataDiskCount')]"
+                    },
+                    "numberOfNics": {
+                        "value": "[parameters('numberOfNics')]"
+                    },
+                    "vmSubnetStartAddress": {
+                        "value": "[parameters('vmSubnetStartAddress')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    },
+                    "storageAccountDiagnostics": {
+                        "value": "[variables('diagnosticsStorageAccount')]"
+                    },
+                    "tdcTimeZone": {
+                        "value": "[parameters('tdcTimeZone')]"
+                    },
+                    "scriptUrlInit": {
+                        "value": "[variables('scriptUrlInit')]"
+                    },
+                    "sharedStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "imageStorageAccountType": {
+                        "value": "[variables('imageStorageAccountType')]"
+                    },
+                    "datadiskSize": {
+                        "value": "[variables('datadiskSize')]"
+                    },
+                    "skuTypeValue": {
+                        "value": "[variables('skuTypeValue')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublisher')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOffer')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSku')]"
+                    },
+                    "diskCaching": {
+                        "value": "[variables('diskCaching')]"
+                    },
+                    "kanjiSupport": {
+                        "value": "[variables('kanjiSupport')]"
+                    },
+                    "ntpServerlist": {
+                        "value": "[parameters('ntpServerlist')]"
+                    },
+                    "securityFeature": {
+                        "value": "[variables('securityFeature')]"
+                    },
+                    "timCachePercent": {
+                        "value": "[parameters('timCachePercent')]"
+                    },
+                    "faultDomain": {
+                        "value": "[variables('faultDomain')]"
+                    },
+                    "packageSelector": {
+                        "value": "[parameters('packageSelector')]"
+                    },
+                    "temporal": {
+                        "value": "[parameters('temporal')]"
+                    },
+                    "byol": {
+                        "value": "[parameters('byol')]"
+                    },
+                    "scaleSize": {
+                        "value": "[variables('scaleSize')]"
+                    },
+                    "noOfNicsToCreate": {
+                        "value": "[variables('noOfNicsToCreate')]"
+                    },
+                    "scaleOutNo": {
+                        "value": "[variables('scaleOutNo')]"
+                    },
+                    "vpYesOrNo": {
+                        "value": "[parameters('vpYesOrNo')]"
+                    },
+                    "mainframeConnectivity": {
+                        "value": "[parameters('mainframeConnectivity')]"
+                    },
+                    "roleType": {
+                        "value": "[parameters('roleType')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('queryGridYesOrNo'),'Yes')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('queryGrid')]",
+            "dependsOn": [
+                "[variables('vnet')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlQueryGrid')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "queryGridPassword": {
+                        "value": "[parameters('queryGridPassword')]"
+                    },
+                    "queryGridSshPublicKey": {
+                        "value": "[parameters('queryGridSshPublicKey')]"
+                    },
+                    "queryGridAuthenticationType": {
+                        "value": "[parameters('queryGridAuthenticationType')]"
+                    },
+                    "qgSystemNamePrefix": {
+                        "value": "[parameters('queryGridSystemNamePrefix')]"
+                    },
+                    "queryGridvmSize": {
+                        "value": "[parameters('clusterVmSizeQueryGrid')]"
+                    },
+                    "subnet1qgID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "queryGridSubnetStartAddress": {
+                        "value": "[variables('queryGridSubnetStartAddress')]"
+                    },
+                    "queryGridNodeCount": {
+                        "value": "[variables('queryGridNodeCount')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublisherQG')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOfferQG')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSkuQG')]"
+                    },
+                    "tdcTimeZone": {
+                        "value": "[parameters('tdcTimeZone')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('dmYesOrNo'),'Yes')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('datamover')]",
+            "dependsOn": [
+                "[variables('vnet')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlDatamover')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "dmPassword": {
+                        "value": "[parameters('dmPassword')]"
+                    },
+                    "dmSshPublicKey": {
+                        "value": "[parameters('dmSshPublicKey')]"
+                    },
+                    "dmAuthenticationType": {
+                        "value": "[parameters('dmAuthenticationType')]"
+                    },
+                    "dmSystemPrefix": {
+                        "value": "[parameters('dmSystemPrefix')]"
+                    },
+                    "dmAgentCount": {
+                        "value": "[parameters('dmAgentNodeCount')]"
+                    },
+                    "dmMasterCount": {
+                        "value": "[variables('dmMasterCount')]"
+                    },
+                    "dmVMSize": {
+                        "value": "[parameters('dmClusterVmSize')]"
+                    },
+                    "subnet1DMID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "dmSubnetStartAddress": {
+                        "value": "[variables('dmSubnetStartAddress')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublisherDM')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOfferDM')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSkuDM')]"
+                    },
+                    "imageOfferAgent": {
+                        "value": "[variables('imageOfferAgent')]"
+                    },
+                    "imageSkuAgent": {
+                        "value": "[variables('imageSkuAgent')]"
+                    },
+                    "imageStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "sharedStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "tdcTimeZone": {
+                        "value": "[parameters('tdcTimeZone')]"
+                    },
+                    "faultDomain": {
+                        "value": "[variables('faultDomain')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('smYesOrNo'),'Yes')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('serverManagement')]",
+            "dependsOn": [
+                "[variables('vnet')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlServerManagement')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "smPassword": {
+                        "value": "[parameters('smPassword')]"
+                    },
+                    "smSshPublicKey": {
+                        "value": "[parameters('smSshPublicKey')]"
+                    },
+                    "smAuthenticationType": {
+                        "value": "[parameters('smAuthenticationType')]"
+                    },
+                    "smSystemCount": {
+                        "value": "[parameters('smSystemCount')]"
+                    },
+                    "smVMSize": {
+                        "value": "[parameters('smClusterVmSize')]"
+                    },
+                    "smSystemPrefix": {
+                        "value": "[variables('smSystemPrefix')]"
+                    },
+                    "subnet1SMID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "smSubnetStartAddress": {
+                        "value": "[variables('smSubnetStartAddress')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublisherSM')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOfferSM')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSkuSM')]"
+                    },
+                    "imageStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "faultDomain": {
+                        "value": "[variables('faultDomain')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('dsuYesOrNo'),'Yes')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('dsu')]",
+            "dependsOn": [
+                "[variables('vnet')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlDsu')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "dsuPassword": {
+                        "value": "[parameters('dsuPassword')]"
+                    },
+                    "dsuSshPublicKey": {
+                        "value": "[parameters('dsuSshPublicKey')]"
+                    },
+                    "dsuAuthenticationType": {
+                        "value": "[parameters('dsuAuthenticationType')]"
+                    },
+                    "dsuSystemPrefix": {
+                        "value": "[parameters('dsuSystemPrefix')]"
+                    },
+                    "dsuNodeCount": {
+                        "value": "[variables('dsuNodeCount')]"
+                    },
+                    "dsuVMSize": {
+                        "value": "[parameters('dsuClusterVmSize')]"
+                    },
+                    "subnet1DsuID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "dsuSubnetStartAddress": {
+                        "value": "[variables('dsuSubnetStartAddress')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublisherDSU')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOfferDSU')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSkuDSU')]"
+                    },
+                    "imageStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "sharedStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "tdcTimeZone": {
+                        "value": "[parameters('tdcTimeZone')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('emYesOrNo'),'Yes')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('ecosystemmanager')]",
+            "dependsOn": [
+                "[variables('vnet')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlEcosystemmanager')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "emPassword": {
+                        "value": "[parameters('emPassword')]"
+                    },
+                    "emSshPublicKey": {
+                        "value": "[parameters('emSshPublicKey')]"
+                    },
+                    "emAuthenticationType": {
+                        "value": "[parameters('emAuthenticationType')]"
+                    },
+                    "emSystemNamePrefix": {
+                        "value": "[parameters('emSystemNamePrefix')]"
+                    },
+                    "emNodeCount": {
+                        "value": "[variables('emNodeCount')]"
+                    },
+                    "emVMSize": {
+                        "value": "[parameters('emVmSize')]"
+                    },
+                    "subnet1EMID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "emSubnetStartAddress": {
+                        "value": "[variables('emSubnetStartAddress')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    },
+                    "sharedStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "imageStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublisherEM')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOfferEM')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSkuEM')]"
+                    },
+                    "tdcTimeZone": {
+                        "value": "[parameters('tdcTimeZone')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('tdRestYesOrNo'),'Yes')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('tdRest')]",
+            "dependsOn": [
+                "[variables('vnet')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrltdRest')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "tdRestPassword": {
+                        "value": "[parameters('tdRestPassword')]"
+                    },
+                    "tdRestSshPublicKey": {
+                        "value": "[parameters('tdRestSshPublicKey')]"
+                    },
+                    "tdRestAuthenticationType": {
+                        "value": "[parameters('tdRestAuthenticationType')]"
+                    },
+                    "tdRestSystemNamePrefix": {
+                        "value": "[parameters('tdRestSystemNamePrefix')]"
+                    },
+                    "tdRestNodeCount": {
+                        "value": "[variables('tdRestNodeCount')]"
+                    },
+                    "tdRestVMSize": {
+                        "value": "[parameters('tdRestVmSize')]"
+                    },
+                    "subnet1tdRestID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "tdRestSubnetStartAddress": {
+                        "value": "[variables('tdRestSubnetStartAddress')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    },
+                    "imageStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublishertdRest')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOffertdRest')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSkutdRest')]"
+                    },
+                    "tdcTimeZone": {
+                        "value": "[parameters('tdcTimeZone')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('unityYesOrNo'),'Yes')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('unity')]",
+            "dependsOn": [
+                "[variables('vnet')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlUnity')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "unityPassword": {
+                        "value": "[parameters('unityPassword')]"
+                    },
+                    "unitySshPublicKey": {
+                        "value": "[parameters('unitySshPublicKey')]"
+                    },
+                    "unityAuthenticationType": {
+                        "value": "[parameters('unityAuthenticationType')]"
+                    },
+                    "unitySystemNamePrefix": {
+                        "value": "[parameters('unitySystemNamePrefix')]"
+                    },
+                    "unityNodeCount": {
+                        "value": "[variables('unityNodeCount')]"
+                    },
+                    "unityVMSize": {
+                        "value": "[parameters('unityVmSize')]"
+                    },
+                    "subnet1unityID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "unitySubnetStartAddress": {
+                        "value": "[variables('unitySubnetStartAddress')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    },
+                    "sharedStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "imageStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublisherUnity')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOfferUnity')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSkuUnity')]"
+                    },
+                    "tdcTimeZone": {
+                        "value": "[parameters('tdcTimeZone')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('vpYesOrNo'),'Yes')]",
+            "apiVersion": "2019-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[variables('viewpoint')]",
+            "dependsOn": [
+                "[variables('vnet')]",
+                "[variables('datamover')]",
+                "[variables('dsu')]",
+                "[variables('serverManagement')]",
+                "[variables('database')]",
+                "[variables('ecosystemmanager')]",
+                "[variables('tdRest')]",
+                "[variables('queryGrid')]",
+                "[variables('unity')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('templateUrlViewpoint')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "vpPassword": {
+                        "value": "[parameters('vpPassword')]"
+                    },
+                    "vpSshPublicKey": {
+                        "value": "[parameters('vpSshPublicKey')]"
+                    },
+                    "vpAuthenticationType": {
+                        "value": "[parameters('vpAuthenticationType')]"
+                    },
+                    "vmSubnetAddressSpace": {
+                        "value": "[parameters('vmSubnetAddressSpace')]"
+                    },
+                    "vpSystemNamePrefix": {
+                        "value": "[parameters('vpSystemNamePrefix')]"
+                    },
+                    "vpNodeCount": {
+                        "value": "[variables('vpNodeCount')]"
+                    },
+                    "vpVMSize": {
+                        "value": "[parameters('vpVmSize')]"
+                    },
+                    "subnet1VPID": {
+                        "value": "[variables('subnet1ID')]"
+                    },
+                    "vpSubnetStartAddress": {
+                        "value": "[variables('vpSubnetStartAddress')]"
+                    },
+                    "sharedStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "imageStorageAccountType": {
+                        "value": "[variables('sharedStorageAccountType')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[variables('imagePublisherVP')]"
+                    },
+                    "imageOffer": {
+                        "value": "[variables('imageOfferVP')]"
+                    },
+                    "imageSku": {
+                        "value": "[variables('imageSkuVP')]"
+                    },
+                    "scriptHostUrl": {
+                        "value": "[variables('scriptHostUrlvp')]"
+                    },
+                    "generateHostFileParam": {
+                        "value": "[variables('generateHostFileParam')]"
+                    },
+                    "ansibleparam": {
+                        "value": "[variables('ansibleparam')]"
+                    },
+                    "vpportalpassword": {
+                        "value": "[parameters('vpportalpassword')]"
+                    },
+                    "tdcTimeZone": {
+                        "value": "[parameters('tdcTimeZone')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
